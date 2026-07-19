@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+
+body{
+background:linear-gradient(135deg,#001f3f,#000);
+color:white;
+text-align:center;
+font-family:Arial;
+font-size:20px;
+}
+
+h1{
+font-size:40px;
+}
+
+button{
+background:#0066ff;
+color:white;
+border:0;
+padding:12px 25px;
+border-radius:10px;
+font-size:20px;
+}
+
+input{
+padding:10px;
+font-size:20px;
+border-radius:8px;
+width:150px;
+}
+
+.creator{
+position:fixed;
+bottom:10px;
+width:100%;
+color:#00aaff;
+font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="game">
+
+<h1>BRILOS GAMES 🧠</h1>
+
+<button onclick="startGame()">НАЧАТЬ</button>
+
+<p class="creator">
+Создатель: Акылов Артур
+</p>
+
+</div>
+
+
+<script>
+
+let level = Number(localStorage.getItem("level")) || 1;
+let task = 0;
+let answer = 0;
+let maxTasks = 10;
+
+
+// звук правильного ответа
+function soundWin(){
+
+let ctx = new AudioContext();
+
+let osc = ctx.createOscillator();
+let gain = ctx.createGain();
+
+osc.connect(gain);
+gain.connect(ctx.destination);
+
+osc.frequency.value = 700;
+gain.gain.value = 0.15;
+
+osc.start();
+
+setTimeout(()=>{
+osc.stop();
+},200);
+
+}
+
+
+
+function startGame(){
+nextTask();
+}
+
+
+
+function nextTask(){
+
+if(level<=25){
+maxTasks=10;
+}
+else if(level<=75){
+maxTasks=20;
+}
+else{
+maxTasks=15;
+}
+
+
+task++;
+
+
+let a,b,op;
+
+
+if(level<=25){
+
+a=Math.floor(Math.random()*20)+1;
+b=Math.floor(Math.random()*20)+1;
+
+op="+";
+answer=a+b;
+
+}
+
+else{
+
+a=Math.floor(Math.random()*500)+50;
+b=Math.floor(Math.random()*500)+50;
+
+let ops=["+","-","×","÷"];
+
+op=ops[Math.floor(Math.random()*4)];
+
+
+if(op=="+") answer=a+b;
+
+if(op=="-") answer=a-b;
+
+if(op=="×") answer=a*b;
+
+
+if(op=="÷"){
+
+answer=Math.floor(a/b);
+a=answer*b;
+
+}
+
+}
+
+
+
+document.getElementById("game").innerHTML=`
+
+<h1>BRILOS GAMES 🧠</h1>
+
+<h2>Уровень: ${level} ⭐</h2>
+
+<h3>Задача ${task}/${maxTasks}</h3>
+
+<h2>${a} ${op} ${b} = ?</h2>
+
+<input id="answer" type="number">
+
+<br><br>
+
+<button onclick="check()">ОТВЕТИТЬ</button>
+
+<p id="result"></p>
+
+
+<p class="creator">
+Создатель: Акылов Артур
+</p>
+
+`;
+
+}
+
+
+
+function check(){
+
+
+let user=Number(document.getElementById("answer").value);
+
+
+if(user===answer){
+
+
+soundWin();
+
+document.getElementById("result").innerHTML="Правильно ✅";
+
+
+setTimeout(()=>{
+
+
+if(task>=maxTasks){
+
+
+level++;
+
+task=0;
+
+
+if(level>100){
+level=100;
+}
+
+
+localStorage.setItem("level",level);
+
+
+alert("🎉 УРОВЕНЬ "+level+" ОТКРЫТ!");
+
+}
+
+
+nextTask();
+
+
+},700);
+
+
+}
+
+else{
+
+
+document.getElementById("result").innerHTML="Ква-ква-ква 🐸❌";
+
+
+}
+
+
+}
+
+
+</script>
+
+</body>
+</html>
